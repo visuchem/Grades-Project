@@ -1,0 +1,277 @@
+---
+title: "Project Linear Regression"
+author: "Viswanth"
+date: "20 October 2017"
+output:
+  html_document: default
+  word_document: default
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r}
+library(psych)
+library(car)
+#1.Describe data of response variable and predictors in terms of key summary statistics like mean, mode, median, standard deviation, range, skewness and kurtosis. Show histogram and box plots also for each variables. [hint: describe command in R]
+#Each variable to be explained in 30 words maximum.
+
+```
+
+```{r}
+grades<-read.csv(file.choose())
+dim(grades)
+colnames(grades)
+names(grades)
+hist(grades$gpa, main = "Histogram of GPA", xlab = "GPA", ylab = "Frequency", col = "Blue")
+boxplot(grades$gpa,  main = "Box plot of GPA", xlab = "GPA", col = "Blue", horizontal = T)
+stem(grades$gpa)
+summary(grades$quiz1)
+describe(grades$quiz1)
+hist(grades$quiz1, main = "Histogram of quiz1", xlab = "Quiz1 Marks", ylab = "Marks", col = "Blue")
+boxplot(grades$quiz1,  main = "Box plot of Quiz1", xlab = "Quiz1", col = "Blue", horizontal = T)
+stem(grades$quiz1)
+summary(grades$quiz2)
+describe(grades$quiz2)
+hist(grades$quiz2, main = "Histogram of quiz2", xlab = "Quiz2 Marks", ylab = "Frequency", col = "Blue")
+boxplot(grades$quiz2,  main = "Box plot of Quiz2", xlab = "Quiz2", col = "Blue", horizontal = T)
+stem(grades$quiz2)
+summary(grades$quiz3)
+describe(grades$quiz3)
+hist(grades$quiz3, main = "Histogram of quiz3", xlab = "Quiz3 Marks", ylab = "Frequency", col = "Blue")
+boxplot(grades$quiz3,  main = "Box plot of Quiz3", xlab = "Quiz3", col = "Blue", horizontal = T)
+stem(grades$quiz3)
+summary(grades$quiz4)
+describe(grades$quiz4)
+hist(grades$quiz4, main = "Histogram of quiz4", xlab = "Quiz4 Marks", ylab = "Frequency", col = "Blue")
+boxplot(grades$quiz4,  main = "Box plot of Quiz4", xlab = "Quiz4", col = "Blue", horizontal = T)
+stem(grades$quiz4)
+summary(grades$quiz5)
+describe(grades$quiz5)
+hist(grades$quiz5, main = "Histogram of quiz5", xlab = "Quiz5 Marks", ylab = "Frequency", col = "Blue")
+boxplot(grades$quiz5,  main = "Box plot of Quiz5", xlab = "Quiz5", col = "Blue", horizontal = T)
+stem(grades$quiz5)
+summary(grades$final)
+describe(grades$final)
+hist(grades$final, main = "Histogram of final", xlab = "Final Marks", ylab = "Frequencys", col = "Blue")
+boxplot(grades$final,  main = "Box plot of Final", xlab = "Fianl", col = "Blue", horizontal = T)
+stem(grades$final)
+summary(grades$total)
+describe(grades$total)
+hist(grades$total, main = "Histogram of Total Marks", xlab = "Total Marks", ylab = "Frequency", col = "Blue")
+boxplot(grades$total,  main = "Box plot of Total Marks", xlab = "Total", col = "Blue", horizontal = T)
+stem(grades$total)
+
+
+
+```
+
+
+```{r}
+#2.	How predictor/s is related to response variable (final)? [hint: first plat scatter diagram followed by correlation test]
+#Present diagram/s and correlations in the following space. Before diagrams explain relationship in 3 or 4 lines.
+cor.test(grades$final, grades$gpa)
+plot(final~gpa, data = grades, main= "Scatter plot of GPA vs Final", col= 'blue', xlab= 'GPA', ylab="Final")
+abline(lm(grades$final~grades$gpa), col="red")
+cor.test(grades$final, grades$quiz1)
+plot(final~quiz1, data = grades, main= "Scatter plot of Quiz1 vs Final",col= 'blue', ylab= 'Fianal', xlab="Quiz1")
+abline(lm(grades$final~grades$quiz1), col="red")
+cor.test(grades$final, grades$quiz2)
+plot(final~quiz2, data = grades, main= "Scatter plot of Quiz2 vs Final",col= 'blue', ylab= 'Fianal', xlab="Quiz2")
+abline(lm(grades$final~grades$quiz2), col="red")
+cor.test(grades$final, grades$quiz3)
+plot(final~quiz3, data = grades, main= "Scatter plot of Quiz3 vs Final",col= 'blue', ylab= 'Fianal', xlab="Quiz3")
+abline(lm(grades$final~grades$quiz3), col="red")
+cor.test(grades$final, grades$quiz4)
+plot(final~quiz4, data = grades, main= "Scatter plot of Quiz4 vs Final",col= 'blue', ylab= 'Fianal', xlab="Quiz4")
+abline(lm(grades$final~grades$quiz4), col="red")
+cor.test(grades$final, grades$quiz5)
+plot(final~quiz5, data = grades, main= "Scatter plot of Quiz5 vs Final",col= 'blue', ylab= 'Fianal', xlab="Quiz5")
+abline(lm(grades$final~grades$quiz5), col="red")
+cor.test(grades$final, grades$total)
+plot(final~total, data = grades, main= "Scatter plot of Total vs Final",col= 'blue', ylab= 'Fianal', xlab="Total")
+abline(lm(grades$final~grades$total), col="red")
+
+
+```
+
+
+```{r}
+
+#After correlation test start with buliding regression models and validate
+model1<- lm(final ~ gpa+quiz1+quiz2+quiz3+quiz4+quiz5+total, data=grades)
+model1
+summary(model1)
+```
+
+
+```{r}
+#Lets check variance inflation factor and durbin watson statistics to check for inflation of r- square and auto correlation.
+vif(model1)
+durbinWatsonTest(model1)
+```
+
+
+
+```{r}
+#In Model1, variable GPA does not have significant slope with response variable, variance inflation factor results not allowing to build a model with total as one of the predictor. Lets build one more model by removing total alone. 
+model2<- lm(final ~ gpa+quiz1+quiz2+quiz3+quiz4+quiz5, data=grades)
+model2
+summary(model2)
+vif(model2)
+durbinWatsonTest(model2)
+```
+
+
+
+```{r}
+#From Model2, VIF result it concluded that quiz1 is increasing corelation artificially, hence it will be removed from model an new model is constructed as follows
+model3<- lm(final ~ gpa+quiz2+quiz3+quiz4+quiz5, data=grades)
+model3
+summary(model3)
+vif(model3)
+durbinWatsonTest(model3)
+```
+
+```{r}
+#From model3 summary and VIF Out put, it was decided that though no inflators in model3.variables quiz2, quiz4 and quiz5 does not have significant pvalue they were removed and model as follows
+model4<- lm(final ~ gpa+quiz3, data=grades)
+model4
+summary(model4)
+vif(model4)
+durbinWatsonTest(model4)
+```
+```{r}
+#from model4 out put and vif, both predictors can be used for regression, lets plot final vs predictors of GPA and quiz3
+plot(final~gpa+quiz3, data = grades)
+abline(lm(grades$final~grades$gpa+grades$quiz3), col="red")
+scatterplot(final~quiz3|gender, data=grades)
+scatterplot(final~gpa|gender, data=grades)
+scatterplot(final~quiz3|section, data=grades)
+scatterplot(final~gpa|section, data=grades)
+scatterplot(final~quiz3|ethnicity, data=grades)
+scatterplot(final~gpa|ethnicity, data=grades)
+```
+
+```{r}
+#visualize association of predictors and response variable.
+pairs(~final+gpa+quiz1+quiz2+quiz3+quiz4+quiz5+total, data=grades, main= "scatter plot matrix", col= heat.colors(2) )
+#color by final
+library(scatterplot3d)
+rg<-colorRampPalette(c("red", "green"))(105)
+final_plot<-scatterplot3d(z=grades$final, y=grades$gpa, x=grades$quiz3, color =rg,
+                          xlab = "Quiz3",
+                          ylab = "GPA",  
+                          zlab = "Final", 
+                          main="3D Scatter Plot")
+```
+
+
+
+
+
+
+
+```{r}
+#Model4 is having R-squred value less when comapred with model3.. so, model3 will be selected as final model
+#4.How do you interpret significance value of F-statistics? Mention in 4 lines and show R Output. [Fitness of model]
+anova(model3)
+anova(model4)
+
+```
+
+
+```{r}
+#From anova test p value it can conclude that quiz2, quiz4 and quiz5 are not having significant slope with response variable fianl So, lets Check durbin watson statistic test to check auto corrrlation among variables.
+durbinWatsonTest(model3)
+durbinWatsonTest(model4)
+
+```
+
+
+
+```{r}
+plot(model4)
+```
+
+
+
+```{r}
+#9.	Test the assumption of Normality and interpret your findings. [hint: histogram of residuals/errors]
+#Show histogram and interpret in maximum 3 lines. 
+#Lets find error/residual term of model3 as below
+residual<-residuals(model4)
+residual
+summary(residual)
+hist(residual, col="red", main = "Histogram of Mode4 errors", xlab = "Error", ylab = "Frequency")
+boxplot(residual, col="red", horizontal = T)
+```
+
+```{r}
+#10.	Test the assumption of Independent of observations and interpret in maximum 3 lines [hint: draw scatter plot between residuals/errors (y-axis) and observation numbers (x-axis)]
+grades$residual=NULL
+grades$residual=residual
+obs_no<-c(1:105)
+grades$obs_no=NULL
+grades$obs_no=obs_no
+grades
+#lets plot independent obseration numbers vs error 
+plot(grades$obs_no, grades$residual, main="Independence of Residuals")
+abline(h = 0, col = "blue", lwd=2)
+```
+
+
+```{r}
+#11.	Test the assumption of linear relationship and interpret in maximum 3 lines for each predictor [hint: draw scatter plot between response variable, final (y-axis) and predictor/s (x-axis). If more than one predictor is used in model then more scatter plots would be required]
+plot(grades$gpa, grades$final)
+abline(lm(grades$final~grades$gpa), col="red")
+plot(grades$quiz3, grades$final)
+abline(lm(grades$final~grades$quiz3), col="red")
+plot(grades$final, grades$residual)
+abline(h = 0, col = "red", lwd=2)
+
+```
+
+
+```{r}
+#12.	 Test the assumption of Constant Error Variance and interpret in maximum 3 lines [hint: draw scatter plot between residuals/errors (y-axis) and predicted values (x-axis)]
+pred<-predict(model4)
+grades$pred<-NULL
+grades$pred<-pred
+grades
+plot(grades$pred,grades$residual, main = "Constant error Varience", col="red")
+abline(h = 0, col = "blue", lwd=2)
+
+```
+
+
+```{r}
+#What is Standard Error of Estimate of your model and how do you interpret the same. Show with some hypothetical values of predictors. Maximum 300 words. [hint: Standard Error of Estimate]
+fitted(model4)
+```
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
